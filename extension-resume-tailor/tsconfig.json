@@ -1,0 +1,16 @@
+{
+  "extends": "../extension/tsconfig.json",
+  "compilerOptions": {
+    "types": ["chrome", "react", "node"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "../extension/node_modules/@types"
+    ],
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "lib": ["ES2020", "DOM"],
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  },
+  "include": ["src"]
+}
