@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Test</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <h1>Google OAuth Test</h1>
+    <div id="buttonDiv"></div>
+    <div id="result"></div>
+
+    <script>
+        window.onload = function () {
+            google.accounts.id.initialize({
+                client_id: "545565358066-ser7g74skbrbbsnei5vtnkmu87ilp252.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+            
+            google.accounts.id.renderButton(
+                document.getElementById("buttonDiv"),
+                { theme: "outline", size: "large" }
+            );
+        }
+
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+            document.getElementById("result").innerHTML = "Login successful! Check console for token.";
+        }
+    </script>
+</body>
+</html>

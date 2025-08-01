@@ -13,9 +13,15 @@ chrome.runtime.onInstalled.addListener((details) => {
   });
 });
 
-// Listen for tab updates to detect job posting pages
+// Track webapp authentication state
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete' && tab.url) {
+    // Check if user is on webapp
+    if (tab.url.includes('localhost:5173')) {
+      // User opened webapp, assume they will authenticate
+      chrome.storage.local.set({ userWasAuthenticated: true });
+    }
+    
     // Check if we're on a supported job site
     const jobSites = [
       'linkedin.com/jobs',

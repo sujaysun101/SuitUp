@@ -13,7 +13,8 @@
     "https://indeed.com/*",
     "https://www.indeed.com/*",
     "https://jobs.google.com/*",
-    "https://www.glassdoor.com/*"
+    "https://www.glassdoor.com/*",
+    "http://localhost:5173/*"
   ],
   "action": {
     "default_popup": "popup.html",

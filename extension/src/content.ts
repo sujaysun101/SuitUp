@@ -3,6 +3,69 @@
 
 import { openResumeTailorModal } from "./content-magic-modal";
 
+console.log('Resume Tailor content script loaded');
+
+// Listen for messages from the extension popup
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  console.log('Content script received message:', message);
+  
+  if (message.type === 'JOB_ANALYSIS_COMPLETE') {
+    // Forward the message to the webapp via postMessage
+    window.postMessage({
+      type: 'JOB_ANALYSIS_COMPLETE',
+      analysis: message.analysis
+    }, window.location.origin);
+    
+    sendResponse({ success: true });
+  }
+  
+  return true; // Keep the messaging channel open for async response
+});
+
+// Listen for messages from the webapp
+window.addEventListener('message', (event) => {
+  // Only accept messages from the same origin
+  if (event.origin !== window.location.origin) return;
+  
+  if (event.data.type === 'WEBAPP_READY') {
+    console.log('Webapp is ready, checking for stored job analysis');
+    
+    // Check if there's a recent job analysis in storage
+    chrome.storage.local.get(['lastJobAnalysis'], (result) => {
+      if (result.lastJobAnalysis) {
+        const analysis = result.lastJobAnalysis;
+        const timeDiff = Date.now() - analysis.timestamp;
+        
+        // If analysis is less than 5 minutes old, use it
+        if (timeDiff < 5 * 60 * 1000) {
+          window.postMessage({
+            type: 'JOB_ANALYSIS_COMPLETE',
+            analysis: {
+              jobData: analysis.jobData,
+              analysis: analysis.analysis,
+              status: 'complete',
+              timestamp: analysis.timestamp
+            }
+          }, window.location.origin);
+        }
+      }
+    });
+  }
+});
+
+// Send webapp ready message when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      window.postMessage({ type: 'WEBAPP_READY' }, window.location.origin);
+    }, 1000);
+  });
+} else {
+  setTimeout(() => {
+    window.postMessage({ type: 'WEBAPP_READY' }, window.location.origin);
+  }, 1000);
+}
+
 // Enhanced job extraction logic with modern selectors and dynamic detection
 function extractAndExposeJob() {
   let job: { title?: string; company?: string; location?: string; description?: string } = {};
