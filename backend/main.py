@@ -28,6 +28,7 @@ from routes_job import router as job_router
 from routes_google import router as google_router
 from routes_llm import router as llm_router
 from routes_docs import router as docs_router
+from routes.onboarding import router as onboarding_router
 
 app = FastAPI(
     title="Resume Tailor API",
@@ -35,10 +36,15 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware for Chrome extension
+# CORS middleware for Chrome extension and webapp
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["chrome-extension://*", "moz-extension://*"],
+    allow_origins=[
+        "chrome-extension://*", 
+        "moz-extension://*",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -49,6 +55,7 @@ app.include_router(job_router)
 app.include_router(google_router)
 app.include_router(llm_router)
 app.include_router(docs_router)
+app.include_router(onboarding_router)
 # Initialize services
 resume_parser = ResumeParser()
 job_analyzer = JobAnalyzer()
